@@ -62,7 +62,7 @@ jobs:
       - name: Deploy binary to other branch
         uses: manzoorwanijk/action-deploy-to-repo@master
         with:
-          src_dir: hello
+          src_dir: binary-folder
           target_owner: mbzcloud-test
           target_repo: test-go
           target_dir: hello-binary
