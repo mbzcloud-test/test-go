@@ -1,0 +1,63 @@
+name: Go project, add React and Build binary
+
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+    branches: ["main"]
+
+jobs:
+  clone:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout 🚪
+        uses: actions/checkout@v3
+
+      - name: Copy React-builds from other repo 🔍📥
+        uses: rodrigorodriguescosta/checkout@main
+        continue-on-error: false
+        with:
+          repository: mbzcloud-test/test-react
+          token: ${{ secrets.GH_PACKAGE_PAT }}
+          ref: builds  #branch to copy from
+          path: .
+
+      - name: Display structure of downloaded files 📜
+        run: ls -R
+
+      # Build Go project with added React-builds:
+  build:
+    runs-on: ubuntu-latest
+    needs: clone
+
+    steps:
+      - name: Checkout 🚪
+        uses: actions/checkout@v3
+
+      - name: Set up Go 🍽
+        uses: actions/setup-go@v3
+        with:
+          go-version: 1.18
+
+      - name: Build Go binary 🛠
+        run: go build -v ./...
+
+  deploy:
+    runs-on: ubuntu-latest
+    needs: build
+
+    steps:
+      - name: Checkout 🚪
+        uses: actions/checkout@v3
+
+      - name: Deploy binary to other branch
+        uses: manzoorwanijk/action-deploy-to-repo@master
+        with:
+          src_dir: hello
+          target_owner: mbzcloud-latest
+          target_repo: test-go
+          target_dir: hello-binary
+          target_branch: builds
+          access_token: ${{ secrets.GH_PACKAGE_PAT }}
+          cleanup_command: "rm -rf hello-binary/*"
