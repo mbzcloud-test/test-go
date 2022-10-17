@@ -55,7 +55,7 @@ jobs:
         uses: manzoorwanijk/action-deploy-to-repo@master
         with:
           src_dir: hello
-          target_owner: mbzcloud-latest
+          target_owner: mbzcloud-test
           target_repo: test-go
           target_dir: hello-binary
           target_branch: builds
